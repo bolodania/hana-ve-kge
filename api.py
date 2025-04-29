@@ -8,7 +8,7 @@ from retrieval import HybridRetriever
 
 load_dotenv()
 
-local_testing = True
+local_testing = False
 
 app = Flask(__name__)
 env = AppEnv()
