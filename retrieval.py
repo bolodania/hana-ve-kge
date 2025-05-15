@@ -2,7 +2,7 @@ from database import HanaClient
 from gen_ai_hub.proxy.langchain.openai import OpenAIEmbeddings, ChatOpenAI
 from gen_ai_hub.proxy.gen_ai_hub_proxy import GenAIHubProxyClient
 from ai_core_sdk.ai_core_v2_client import AICoreV2Client
-from langchain_community.vectorstores.hanavector import HanaDB
+from langchain_hana import HanaDB
 from prompts import get_rdf_context, get_sparql_prompt, get_sparql_recovery_prompt, get_final_answer_prompt
 from config import load_aicore_config
 import csv
@@ -33,7 +33,7 @@ class HybridRetriever:
         self.db = HanaDB(
             embedding=self.embedding_model,
             connection=HanaClient().connection,
-            table_name="SUPPLIERS_EMBED_ADA",
+            table_name="SUPPLIERS_EMBED_ADA_YOUR_NUMBER",
             content_column="CONTENT",
             metadata_column="METADATA",
             vector_column="VECTOR"
@@ -192,5 +192,7 @@ class HybridRetriever:
 
         # Step 5: Restore Original Values in the Response
         restored_answer = self.restore_original_values_in_response(pseudonymized_answer)
+        
+        self.hana_client.close()
 
         return restored_answer

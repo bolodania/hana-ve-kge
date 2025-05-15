@@ -1,8 +1,15 @@
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
+from langchain_hana import HanaDB
+from gen_ai_hub.proxy.langchain.openai import OpenAIEmbeddings
+from gen_ai_hub.proxy.gen_ai_hub_proxy import GenAIHubProxyClient
+from ai_core_sdk.ai_core_v2_client import AICoreV2Client
+from database import HanaClient
+from config import load_aicore_config
 import time
 
-start_time = time.time()  # Start timer
+# Start timer
+start_time = time.time()
 
 def extract_chunks_from_pdf_with_langchain(file_path: str, chunk_size: int = 500, chunk_overlap: int = 50):
     """
@@ -28,50 +35,37 @@ def extract_chunks_from_pdf_with_langchain(file_path: str, chunk_size: int = 500
 
     return chunks
 
+# Extract chunks from the PDF
 chunks = extract_chunks_from_pdf_with_langchain("sources/Supplier_Performance_Report_Detailed.pdf")
-# for chunk in chunks:
-#     print(chunk.metadata)
-#     print(chunk.page_content)
 
-#Set up HANA Cloud Connection
-from hdbcli import dbapi
-import json
-import os
-from dotenv import load_dotenv
-# Import the embeddings module from SAPs Generative AI Hub SDK
-from gen_ai_hub.proxy.langchain import OpenAIEmbeddings
+# Load configurations
+aicore_config = load_aicore_config()
 
-load_dotenv()
+# Initialize HANA client
+hana_client = HanaClient()
 
-with open(os.path.join(os.getcwd(), 'env_cloud.json')) as f:
-    hana_env_c = json.load(f)
+# Initialize AICore client and proxy
+ai_core_client = AICoreV2Client(
+    base_url=aicore_config['AICORE_BASE_URL'],
+    auth_url=aicore_config['AICORE_AUTH_URL'],
+    client_id=aicore_config['AICORE_CLIENT_ID'],
+    client_secret=aicore_config['AICORE_CLIENT_SECRET'],
+    resource_group=aicore_config['AICORE_RESOURCE_GROUP']
+)
 
-with open(os.path.join(os.getcwd(), 'env_config.json')) as f:
-    aicore_config = json.load(f)
+# Initialize GenAIHub proxy client
+proxy_client = GenAIHubProxyClient(ai_core_client=ai_core_client)
 
-HANA_SCHEMA = "RAG"
-HANA_TABLE = "SUPPLIERS_EMBED_ADA"
+# Initialize embedding model and LLM
+embedding_model = OpenAIEmbeddings(proxy_model_name='text-embedding-ada-002', proxy_client=proxy_client)
 
-connDBAPI = dbapi.connect(
-            address=hana_env_c['url'],
-            port=hana_env_c['port'],
-            user=hana_env_c['user'],
-            password=hana_env_c['pwd'],
-            currentSchema= HANA_SCHEMA
-        )
+# Define HANA table and schema
+HANA_TABLE = "SUPPLIERS_EMBED_ADA_YOUR_NUMBER"
 
-#Initiate the embedding model to be used from GenAI Hub and provide additional parameters as chunk size
-embeddings = OpenAIEmbeddings(proxy_model_name='text-embedding-ada-002', chunk_size=100, max_retries=10)
-
-# Open dbapi connection
-cursor = connDBAPI.cursor()
-
-from langchain_community.vectorstores.hanavector import HanaDB
-#Create a LangChain VectorStore interface for the HANA database and specify the table (collection) to use for accessing the vector embeddings
-
+# Create a LangChain VectorStore interface for the HANA database
 db = HanaDB(
-    connection=connDBAPI,
-    embedding=embeddings,
+    connection=hana_client.connection,
+    embedding=embedding_model,
     table_name=HANA_TABLE,
     content_column="CONTENT",
     metadata_column="METADATA",
@@ -81,13 +75,12 @@ db = HanaDB(
 # Delete already existing documents from the table
 db.delete(filter={})
 
-# add the loaded document chunks
+# Add the loaded document chunks
 db.add_documents(chunks)
 
-# Commit and Close Connection
-connDBAPI.commit()
-cursor.close()
-connDBAPI.close()
+# Commit and close the database connection
+hana_client.connection.commit()
+hana_client.close()
 
 # End the timer
 end_time = time.time()
