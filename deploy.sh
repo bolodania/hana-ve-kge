@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SERVICE_NAME="hana-ve-kge-uaa"
+SERVICE_KEY_NAME="uaa-service-key"  # Name of the service key
 
 # Create the service if it doesn't exist
 cf create-service xsuaa application "$SERVICE_NAME" || echo "Service creation triggered..."
@@ -30,6 +31,9 @@ CURRENT_STATUS=$(get_service_status)
 if [[ "$CURRENT_STATUS" != "create succeeded" && "$CURRENT_STATUS" != "update succeeded" ]]; then
   wait_for_service
 fi
+
+# Create the service key if it doesn't exist
+cf create-service-key "$SERVICE_NAME" "$SERVICE_KEY_NAME" || echo "Service key creation triggered..."
 
 # Deploy the application
 cf push
