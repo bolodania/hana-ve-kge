@@ -1,12 +1,9 @@
 from flask import Flask, request, jsonify
 import os
-from dotenv import load_dotenv
 from cfenv import AppEnv
 from sap import xssec
 import functools
 from retrieval import HybridRetriever
-
-load_dotenv()
 
 local_testing = False
 
@@ -41,6 +38,7 @@ def require_auth(f):
 
 
 @app.route('/ask', methods=['POST'])
+@require_auth
 def ask_question():
     data = request.get_json()
 
