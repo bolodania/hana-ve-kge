@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICE_NAME="hana-ve-kge_YOUR-NUMBER-uaa"
+SERVICE_NAME="hana-ve-kge_YOUR_NUMBER-uaa"
 SERVICE_KEY_NAME="uaa-service-key"  # Name of the service key
 
 # Create the service if it doesn't exist
