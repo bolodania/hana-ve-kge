@@ -15,7 +15,7 @@ retriever = HybridRetriever()
 
 port = int(os.environ.get('PORT', 3000))
 if not local_testing:
-    uaa_service = env.get_service(name='hana-ve-kge-uaa').credentials
+    uaa_service = env.get_service(name='hana-ve-kge_YOUR_NUMBER-uaa').credentials
 
 # Authorization Decorator
 def require_auth(f):
