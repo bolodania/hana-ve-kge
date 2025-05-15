@@ -1,7 +1,10 @@
 Flask
 hdbcli
+langchain_hana
 generative-ai-hub-sdk[all]
-python-dotenv
+langchain-community
+pymupdf
+pandas
 gunicorn
 cfenv
 sap-xssec

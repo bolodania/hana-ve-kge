@@ -1,5 +1,6 @@
 applications:
-  - name: hana-ve-kge-python-srv
+  - name: hana-ve-kge_YOUR_NUMBER-python-srv
+    random-route: true
     memory: 512MB
     disk_quota: 2G
     instances: 1
@@ -8,4 +9,4 @@ applications:
     env:
       FLASK_ENV: production
     services:
-      - hana-ve-kge-uaa
+      - hana-ve-kge_YOUR_NUMBER-uaa

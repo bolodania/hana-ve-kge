@@ -9,8 +9,7 @@ class HanaClient:
             address=hana_env['url'],
             port=hana_env['port'],
             user=hana_env['user'],
-            password=hana_env['pwd'],
-            currentSchema="RAG"
+            password=hana_env['pwd']
         )
         self.cursor = self.connection.cursor()
 
