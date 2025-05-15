@@ -36,7 +36,7 @@ try:
         # Start building batch SPARQL
         sparql_insert = "PREFIX rag: <http://sap.com/rag/>\n\n"
         sparql_insert += "INSERT DATA {\n"
-        sparql_insert += "  GRAPH <rag_suppliers> {\n"
+        sparql_insert += "  GRAPH <rag_suppliers_YOUR_NUMBER> {\n"
         
         for idx, row in batch.iterrows():
             supplier_name = clean_uri(row["SUPPLIER_NAME"])

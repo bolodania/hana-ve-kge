@@ -40,7 +40,7 @@ def get_sparql_prompt():
         '{question}'
 
         Instructions:
-        - Query the GRAPH <rag_suppliers>.
+        - Query the GRAPH <rag_suppliers_YOUR_NUMBER>.
         - Always use the 'rag:' prefix for entities and predicates.
         - Available query variables include: ?supplierName, ?supplierType, ?supplierId, ?address, ?city, ?email, ?phone, ?website, ?country, ?risk.
         - You must only use available variables. Do NOT use any incorrect or undefined variables.
@@ -60,7 +60,7 @@ def get_sparql_prompt():
         Example:
         PREFIX rag: <http://sap.com/rag/>
         SELECT ?supplier ?supplierType ?country ?risk
-        FROM <rag_suppliers>
+        FROM <rag_suppliers_YOUR_NUMBER>
         WHERE {{
             ?supplier rag:locatedIn ?country .
             ?supplier rag:hasSupplierType ?supplierType .
@@ -93,7 +93,7 @@ def get_sparql_recovery_prompt():
 
         Instructions:
         - Generate a SPARQL query for the user question.
-        - Query the GRAPH <rag_suppliers>.
+        - Query the GRAPH <rag_suppliers_YOUR_NUMBER>.
         - Always use the 'rag:' prefix for entities and predicates.
         - Available query variables include: ?supplierName, ?supplierType, ?supplierId, ?address, ?city, ?email, ?phone, ?website, ?country, ?risk.
         - You must only use available variables. Do NOT use any incorrect or undefined variables.
@@ -113,7 +113,7 @@ def get_sparql_recovery_prompt():
         Example:
         PREFIX rag: <http://sap.com/rag/>
         SELECT ?supplier ?supplierType ?country ?risk
-        FROM <rag_suppliers>
+        FROM <rag_suppliers_YOUR_NUMBER>
         WHERE {{
             ?supplier rag:locatedIn ?country .
             ?supplier rag:hasSupplierType ?supplierType .
